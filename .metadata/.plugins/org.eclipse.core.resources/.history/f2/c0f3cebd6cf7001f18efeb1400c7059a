@@ -1,0 +1,10 @@
+package com.tasks.pptReaderProject.pptUploadController;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/ppt")
+public class pptUpload {
+
+}

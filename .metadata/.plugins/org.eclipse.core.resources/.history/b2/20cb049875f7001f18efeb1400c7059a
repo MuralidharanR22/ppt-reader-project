@@ -1,0 +1,9 @@
+spring.application.name=pptReaderProject
+spring.datasource.url=jdbc:postgresql://localhost:5432/pptdb
+spring.datasource.username=postgres
+spring.datasource.password=vips
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA Hibernate Config
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update

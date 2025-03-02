@@ -1,0 +1,5 @@
+package com.tasks.pptReaderProject;
+
+public interface pptUploadService {
+
+}
