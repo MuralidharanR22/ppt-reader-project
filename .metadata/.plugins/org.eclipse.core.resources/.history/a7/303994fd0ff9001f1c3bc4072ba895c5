@@ -1,0 +1,169 @@
+package com.tasks.pptReaderProject.service.impl;
+
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFAutoShape;
+import org.apache.poi.xslf.usermodel.XSLFFreeformShape;
+import org.apache.poi.xslf.usermodel.XSLFShape;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.apache.xmlbeans.XmlCursor;
+import org.apache.xmlbeans.XmlObject;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTGeomShape;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPath2D;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPath2DList;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTShapeProperties;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.tasks.pptReaderProject.service.pptUploadService;
+
+@Service
+public class pptUploadServiceImpl implements pptUploadService {
+
+//	public Map<String, Object> parsePpt(MultipartFile file) {
+//		Map<String, Object> response = new HashMap<>();
+//		List<Map<String, Object>> slidesData = new ArrayList<>();
+//
+//		try (InputStream is = file.getInputStream(); XMLSlideShow ppt = new XMLSlideShow(is)) {
+//			for (XSLFSlide slide : ppt.getSlides()) {
+//				List<Map<String, Object>> shapesList = new ArrayList<>();
+//
+//				for (XSLFShape shape : slide.getShapes()) {
+//					Map<String, Object> shapeData = extractShapeData(shape);
+//					if (!shapeData.isEmpty()) {
+//						shapesList.add(shapeData);
+//					}
+//				}
+//
+//				if (!shapesList.isEmpty()) {
+//					slidesData.add(Map.of("slide_number", slide.getSlideNumber(), "shapes", shapesList));
+//				}
+//			}
+//		} catch (Exception e) {
+//			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing PPT file");
+//		}
+//
+//		if (slidesData.isEmpty()) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Shapes not found");
+//		}
+//
+//		response.put("slides", slidesData);
+//		return response;
+//	}
+
+	@Override
+	public List<Map<String, List<String>>> processPpt(MultipartFile file) throws IOException {
+		List<Map<String, List<String>>> slidesPaths = new ArrayList<>();
+		XMLSlideShow ppt = new XMLSlideShow(file.getInputStream());
+
+		for (XSLFSlide slide : ppt.getSlides()) {
+			Map<String, List<String>> slidePaths = new HashMap<>();
+			List<String> outerPaths = new ArrayList<>();
+			List<String> innerPaths = new ArrayList<>();
+			for (XSLFShape shape : slide.getShapes()) {
+				Map<String, List<String>> extractedPaths = extractSvgPaths(shape);
+				if (extractedPaths.containsKey("outer_paths")) {
+					outerPaths.addAll(extractedPaths.get("outer_paths"));
+				}
+				if (extractedPaths.containsKey("inner_paths")) {
+					innerPaths.addAll(extractedPaths.get("inner_paths"));
+				}
+			}
+			if (!outerPaths.isEmpty()) {
+				slidePaths.put("outer_paths", outerPaths);
+			}
+			if (!innerPaths.isEmpty()) {
+				slidePaths.put("inner_paths", innerPaths);
+			}
+			if (!slidePaths.isEmpty()) {
+				slidesPaths.add(slidePaths);
+			}
+		}
+		return slidesPaths;
+	}
+
+	private Map<String, List<String>> extractSvgPaths(XSLFShape shape) {
+	    Map<String, List<String>> shapePaths = new HashMap<>();
+	    List<String> outerPaths = new ArrayList<>();
+	    List<String> innerPaths = new ArrayList<>();
+
+	    if (shape instanceof XSLFAutoShape autoShape) {
+	        // Extract geometry from the shape
+	        CTShapeProperties shapeProperties = autoShape.getXmlObject().getSpPr();
+	        if (shapeProperties != null && shapeProperties.isSetCustGeom()) {
+	            CTGeomShape geomShape = shapeProperties.getCustGeom();
+	            if (geomShape != null && geomShape.isSetPathLst()) {
+	                CTPath2DList pathList = geomShape.getPathLst();
+	                for (CTPath2D path : pathList.getPathArray()) {
+	                    String svgPath = convertPathToSvg(path);
+	                    outerPaths.add(svgPath);
+	                }
+	            }
+	        }
+	    } else if (shape instanceof XSLFFreeformShape freeformShape) {
+	        // Handle freeform shapes
+	        Rectangle2D bounds = freeformShape.getAnchor();
+	        outerPaths.add(generateSvgPath(bounds));
+	    }
+
+	    if (!outerPaths.isEmpty()) {
+	        shapePaths.put("outer_paths", outerPaths);
+	    }
+	    if (!innerPaths.isEmpty()) {
+	        shapePaths.put("inner_paths", innerPaths);
+	    }
+	    return shapePaths;
+	}
+
+	private String convertPathToSvg(CTPath2D path) {
+	    StringBuilder svgPath = new StringBuilder();
+	    XmlCursor cursor = path.newCursor();
+	    cursor.toFirstChild();
+
+	    while (cursor.hasNextToken()) {
+	        XmlObject obj = cursor.getObject();
+	        if (obj instanceof CTPath2D) {
+	            CTPath2D pathElement = (CTPath2D) obj;
+	            if (pathElement.isSetMoveTo()) {
+	                svgPath.append("M ")
+	                       .append(pathElement.getMoveTo().getPt().getX())
+	                       .append(" ")
+	                       .append(pathElement.getMoveTo().getPt().getY())
+	                       .append(" ");
+	            } else if (pathElement.isSetLnTo()) {
+	                svgPath.append("L ")
+	                       .append(pathElement.getLnTo().getPt().getX())
+	                       .append(" ")
+	                       .append(pathElement.getLnTo().getPt().getY())
+	                       .append(" ");
+	            } else if (pathElement.isSetCubicBezTo()) {
+	                svgPath.append("C ");
+	                for (CTPath2D.CubicBezTo bez : pathElement.getCubicBezTo().getPtArray()) {
+	                    svgPath.append(bez.getX()).append(" ").append(bez.getY()).append(" ");
+	                }
+	            }
+	        }
+	        cursor.toNextToken();
+	    }
+
+	    if (path.isSetClose()) {
+	        svgPath.append("Z");
+	    }
+
+	    return svgPath.toString();
+	}
+
+	private String generateSvgPath(Rectangle2D bounds) {
+	    return String.format("M %.2f %.2f L %.2f %.2f L %.2f %.2f L %.2f %.2f Z",
+	            bounds.getX(), bounds.getY(),
+	            bounds.getX() + bounds.getWidth(), bounds.getY(),
+	            bounds.getX() + bounds.getWidth(), bounds.getY() + bounds.getHeight(),
+	            bounds.getX(), bounds.getY() + bounds.getHeight());
+	}
+}

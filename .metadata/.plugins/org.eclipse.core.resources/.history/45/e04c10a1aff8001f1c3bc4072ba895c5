@@ -1,0 +1,37 @@
+package com.tasks.pptReaderProject.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.xslf.usermodel.XSLFAutoShape;
+import org.apache.poi.xslf.usermodel.XSLFShape;
+import org.apache.poi.xslf.usermodel.XSLFTextBox;
+
+public class svgPathExtractor {
+
+	public static List<String> extractSvgPathNumbers(XSLFShape shape) {
+		List<String> svgPaths = new ArrayList<>();
+
+		if (shape instanceof XSLFAutoShape autoShape) {
+			svgPaths.add(generateSvgPathFromShape(autoShape));
+		} else if (shape instanceof XSLFTextBox textBox) {
+			svgPaths.add(generateSvgPathFromTextBox(textBox));
+		}
+
+		return svgPaths;
+	}
+
+	private static String generateSvgPathFromShape(XSLFAutoShape shape) {
+		var bounds = shape.getAnchor();
+		return String.format("M %.2f %.2f L %.2f %.2f L %.2f %.2f L %.2f %.2f Z", bounds.getX(), bounds.getY(),
+				bounds.getX() + bounds.getWidth(), bounds.getY(), bounds.getX() + bounds.getWidth(),
+				bounds.getY() + bounds.getHeight(), bounds.getX(), bounds.getY() + bounds.getHeight());
+	}
+
+	private static String generateSvgPathFromTextBox(XSLFTextBox textBox) {
+		var bounds = textBox.getAnchor();
+		return String.format("M %.2f %.2f L %.2f %.2f L %.2f %.2f L %.2f %.2f Z", bounds.getX(), bounds.getY(),
+				bounds.getX() + bounds.getWidth(), bounds.getY(), bounds.getX() + bounds.getWidth(),
+				bounds.getY() + bounds.getHeight(), bounds.getX(), bounds.getY() + bounds.getHeight());
+	}
+}

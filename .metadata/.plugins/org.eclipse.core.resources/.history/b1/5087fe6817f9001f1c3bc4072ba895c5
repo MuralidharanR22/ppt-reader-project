@@ -1,0 +1,312 @@
+package com.tasks.pptReaderProject.service.impl;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.poi.xslf.usermodel.*;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTShapeProperties;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPath2D;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPath2DList;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlCursor;
+
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.tasks.pptReaderProject.service.pptUploadService;
+
+@Service
+public class pptUploadServiceImpl implements pptUploadService {
+
+//	public Map<String, Object> parsePpt(MultipartFile file) {
+//		Map<String, Object> response = new HashMap<>();
+//		List<Map<String, Object>> slidesData = new ArrayList<>();
+//
+//		try (InputStream is = file.getInputStream(); XMLSlideShow ppt = new XMLSlideShow(is)) {
+//			for (XSLFSlide slide : ppt.getSlides()) {
+//				List<Map<String, Object>> shapesList = new ArrayList<>();
+//
+//				for (XSLFShape shape : slide.getShapes()) {
+//					Map<String, Object> shapeData = extractShapeData(shape);
+//					if (!shapeData.isEmpty()) {
+//						shapesList.add(shapeData);
+//					}
+//				}
+//
+//				if (!shapesList.isEmpty()) {
+//					slidesData.add(Map.of("slide_number", slide.getSlideNumber(), "shapes", shapesList));
+//				}
+//			}
+//		} catch (Exception e) {
+//			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing PPT file");
+//		}
+//
+//		if (slidesData.isEmpty()) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Shapes not found");
+//		}
+//
+//		response.put("slides", slidesData);
+//		return response;
+//	}
+
+//	@Override
+//	public List<Map<String, List<String>>> processPpt(MultipartFile file) throws IOException {
+//		List<Map<String, List<String>>> slidesPaths = new ArrayList<>();
+//		XMLSlideShow ppt = new XMLSlideShow(file.getInputStream());
+//
+//		for (XSLFSlide slide : ppt.getSlides()) {
+//			Map<String, List<String>> slidePaths = new HashMap<>();
+//			List<String> outerPaths = new ArrayList<>();
+//			List<String> innerPaths = new ArrayList<>();
+//			for (XSLFShape shape : slide.getShapes()) {
+//				Map<String, List<String>> extractedPaths = extractSvgPaths(shape);
+//				if (extractedPaths.containsKey("outer_paths")) {
+//					outerPaths.addAll(extractedPaths.get("outer_paths"));
+//				}
+//				if (extractedPaths.containsKey("inner_paths")) {
+//					innerPaths.addAll(extractedPaths.get("inner_paths"));
+//				}
+//			}
+//			if (!outerPaths.isEmpty()) {
+//				slidePaths.put("outer_paths", outerPaths);
+//			}
+//			if (!innerPaths.isEmpty()) {
+//				slidePaths.put("inner_paths", innerPaths);
+//			}
+//			if (!slidePaths.isEmpty()) {
+//				slidesPaths.add(slidePaths);
+//			}
+//		}
+//		return slidesPaths;
+//	}
+//
+//	private Map<String, List<String>> extractSvgPaths(XSLFShape shape) {
+//        Map<String, List<String>> shapePaths = new HashMap<>();
+//        List<String> outerPaths = new ArrayList<>();
+//        List<String> innerPaths = new ArrayList<>();
+//
+//        if (shape instanceof XSLFAutoShape autoShape) {
+//            Rectangle2D bounds = autoShape.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//        } 
+//        else if (shape instanceof XSLFFreeformShape freeformShape) {
+//            Rectangle2D bounds = freeformShape.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//        } 
+//        else if (shape instanceof XSLFTextBox textBox) {
+//            Rectangle2D bounds = textBox.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//        } 
+//        else if (shape instanceof XSLFConnectorShape connector) {
+//            Rectangle2D bounds = connector.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//        } 
+//        else if (shape instanceof XSLFGroupShape groupShape) {
+//            Rectangle2D bounds = groupShape.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//
+//            for (XSLFShape innerShape : groupShape.getShapes()) {
+//                Map<String, List<String>> extractedPaths = extractSvgPaths(innerShape);
+//                outerPaths.addAll(extractedPaths.getOrDefault("outer_paths", new ArrayList<>()));
+//                innerPaths.addAll(extractedPaths.getOrDefault("inner_paths", new ArrayList<>()));
+//            }
+//        }
+//
+//        if (!outerPaths.isEmpty()) {
+//            shapePaths.put("outer_paths", outerPaths);
+//        }
+//        if (!innerPaths.isEmpty()) {
+//            shapePaths.put("inner_paths", innerPaths);
+//        }
+//        return shapePaths;
+//    }
+//
+//    private String generateSvgPath(Rectangle2D bounds) {
+//        return String.format("M %.2f %.2f L %.2f %.2f L %.2f %.2f L %.2f %.2f Z",
+//                bounds.getX(), bounds.getY(),
+//                bounds.getX() + bounds.getWidth(), bounds.getY(),
+//                bounds.getX() + bounds.getWidth(), bounds.getY() + bounds.getHeight(),
+//                bounds.getX(), bounds.getY() + bounds.getHeight());
+//    }
+//
+//    private String generateInnerPath(Rectangle2D bounds) {
+//        double innerOffsetX = bounds.getWidth() * 0.05;
+//        double innerOffsetY = bounds.getHeight() * 0.05;
+//
+//        innerOffsetX = Math.min(innerOffsetX, bounds.getWidth() / 2);
+//        innerOffsetY = Math.min(innerOffsetY, bounds.getHeight() / 2);
+//
+//        return String.format("M %.2f %.2f L %.2f %.2f L %.2f %.2f L %.2f %.2f Z",
+//                bounds.getX() + innerOffsetX, bounds.getY() + innerOffsetY,
+//                bounds.getX() + bounds.getWidth() - innerOffsetX, bounds.getY() + innerOffsetY,
+//                bounds.getX() + bounds.getWidth() - innerOffsetX, bounds.getY() + bounds.getHeight() - innerOffsetY,
+//                bounds.getX() + innerOffsetX, bounds.getY() + bounds.getHeight() - innerOffsetY);
+//    }
+	
+	@Override
+	public List<Map<String, List<String>>> processPpt(MultipartFile file) throws IOException {
+		List<Map<String, List<String>>> slidesPaths = new ArrayList<>();
+	    XMLSlideShow ppt = new XMLSlideShow(file.getInputStream());
+
+	    for (XSLFSlide slide : ppt.getSlides()) {
+	        Map<String, List<String>> slidePaths = new HashMap<>();
+	        List<String> outerPaths = new ArrayList<>();
+	        List<String> innerPaths = new ArrayList<>();
+
+	        for (XSLFShape shape : slide.getShapes()) {
+	            Map<String, List<String>> extractedPaths = extractSvgPaths(shape);
+	            outerPaths.addAll(extractedPaths.getOrDefault("outer_paths", new ArrayList<>()));
+	            innerPaths.addAll(extractedPaths.getOrDefault("inner_paths", new ArrayList<>()));
+	        }
+
+	        if (!outerPaths.isEmpty()) {
+	            slidePaths.put("outer_paths", outerPaths);
+	        }
+	        if (!innerPaths.isEmpty()) {
+	            slidePaths.put("inner_paths", innerPaths);
+	        }
+	        if (!slidePaths.isEmpty()) {
+	            slidesPaths.add(slidePaths);
+	        }
+	    }
+	    return slidesPaths;
+	}
+
+	private Map<String, List<String>> extractSvgPaths(XSLFShape shape) {
+	    Map<String, List<String>> shapePaths = new HashMap<>();
+	    List<String> outerPaths = new ArrayList<>();
+	    List<String> innerPaths = new ArrayList<>();
+
+	    if (shape instanceof XSLFAutoShape || shape instanceof XSLFFreeformShape) {
+	        // Access the shape's XML
+	        XmlObject xmlObject = shape.getXmlObject();
+	        if (xmlObject != null) {
+	            // Use XmlCursor to navigate the XML structure
+	            XmlCursor cursor = xmlObject.newCursor();
+	            cursor.toFirstChild();
+
+	            // Look for the geometry elements
+	            while (cursor.hasNextToken()) {
+	                    String svgPath = extractPathFromGeometry(cursor);
+	                    if (svgPath != null && !svgPath.isEmpty()) {
+	                        outerPaths.add(svgPath);
+	                        innerPaths.add(generateInnerPath(svgPath));
+	                    }
+	                }
+	                cursor.toNextToken();
+	            }
+	        }
+	    } else if (shape instanceof XSLFGroupShape groupShape) {
+	        // Handle grouped shapes
+	        for (XSLFShape innerShape : groupShape.getShapes()) {
+	            Map<String, List<String>> extractedPaths = extractSvgPaths(innerShape);
+	            outerPaths.addAll(extractedPaths.getOrDefault("outer_paths", new ArrayList<>()));
+	            innerPaths.addAll(extractedPaths.getOrDefault("inner_paths", new ArrayList<>()));
+	        }
+	    }
+
+	    if (!outerPaths.isEmpty()) {
+	        shapePaths.put("outer_paths", outerPaths);
+	    }
+	    if (!innerPaths.isEmpty()) {
+	        shapePaths.put("inner_paths", innerPaths);
+	    }
+	    return shapePaths;
+	}
+
+	private String extractPathFromGeometry(XmlCursor cursor) {
+	    StringBuilder svgPath = new StringBuilder();
+	    XmlCursor geometryCursor = cursor.newCursor();
+	    geometryCursor.toFirstChild();
+
+	    while (geometryCursor.hasNextToken()) {
+	        if (geometryCursor.isStart() && geometryCursor.getName() != null && 
+	            geometryCursor.getName().getLocalPart().equals("pathLst")) {
+	            // Extract path data
+	            XmlCursor pathCursor = geometryCursor.newCursor();
+	            pathCursor.toFirstChild();
+
+	            while (pathCursor.hasNextToken()) {
+	                if (pathCursor.isStart() && pathCursor.getName() != null && 
+	                    pathCursor.getName().getLocalPart().equals("path")) {
+	                    // Extract moveTo, lineTo, cubicBezTo, etc.
+	                    XmlCursor pathElementCursor = pathCursor.newCursor();
+	                    pathElementCursor.toFirstChild();
+
+	                    while (pathElementCursor.hasNextToken()) {
+	                        if (pathElementCursor.isStart() && pathElementCursor.getName() != null) {
+	                            String elementName = pathElementCursor.getName().getLocalPart();
+	                            if (elementName.equals("moveTo")) {
+	                                svgPath.append("M ")
+	                                       .append(pathElementCursor.getObject().getDomNode().getAttributes().getNamedItem("x").getNodeValue())
+	                                       .append(" ")
+	                                       .append(pathElementCursor.getObject().getDomNode().getAttributes().getNamedItem("y").getNodeValue())
+	                                       .append(" ");
+	                            } else if (elementName.equals("lineTo")) {
+	                                svgPath.append("L ")
+	                                       .append(pathElementCursor.getObject().getDomNode().getAttributes().getNamedItem("x").getNodeValue())
+	                                       .append(" ")
+	                                       .append(pathElementCursor.getObject().getDomNode().getAttributes().getNamedItem("y").getNodeValue())
+	                                       .append(" ");
+	                            } else if (elementName.equals("cubicBezTo")) {
+	                                svgPath.append("C ");
+	                                XmlCursor bezCursor = pathElementCursor.newCursor();
+	                                bezCursor.toFirstChild();
+
+	                                while (bezCursor.hasNextToken()) {
+	                                    if (bezCursor.isStart() && bezCursor.getName() != null && 
+	                                        bezCursor.getName().getLocalPart().equals("pt")) {
+	                                        svgPath.append(bezCursor.getObject().getDomNode().getAttributes().getNamedItem("x").getNodeValue())
+	                                               .append(" ")
+	                                               .append(bezCursor.getObject().getDomNode().getAttributes().getNamedItem("y").getNodeValue())
+	                                               .append(" ");
+	                                    }
+	                                    bezCursor.toNextToken();
+	                                }
+	                            }
+	                        }
+	                        pathElementCursor.toNextToken();
+	                    }
+	                }
+	                pathCursor.toNextToken();
+	            }
+	        }
+	        geometryCursor.toNextToken();
+	    }
+
+	    return svgPath.toString();
+	}
+
+	private String generateInnerPath(String outerPath) {
+	    // Split the outer path into tokens
+	    String[] tokens = outerPath.split(" ");
+	    StringBuilder innerPath = new StringBuilder();
+
+	    for (String token : tokens) {
+	        if (token.matches("[0-9.]+")) {
+	            // If the token is a number, scale it by 0.9
+	            double value = Double.parseDouble(token);
+	            innerPath.append(value * 0.9).append(" ");
+	        } else {
+	            // If the token is a command (e.g., "M", "L", "C"), append it as is
+	            innerPath.append(token).append(" ");
+	        }
+	    }
+
+	    return innerPath.toString().trim();
+	}
+}

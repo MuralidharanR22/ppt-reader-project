@@ -1,8 +1,9 @@
 package com.tasks.pptReaderProject.controller;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,11 +15,29 @@ import com.tasks.pptReaderProject.service.pptUploadService;
 @RestController
 public class pptUploadController {
 
-	@Autowired
-	private pptUploadService pptService;
-
-	@PostMapping("/api/ppt/upload")
-	public ResponseEntity<Map<String, Object>> uploadPpt(@RequestParam("file") MultipartFile file) {
-		return ResponseEntity.ok(pptService.parsePpt(file));
+	
+	private final pptUploadService pptService;
+	
+	public pptUploadController(pptUploadService pptService) {
+		this.pptService = pptService;
+		
 	}
+
+//	@PostMapping("/api/ppt/upload")
+//	public ResponseEntity<Map<String, Object>> uploadPpt(@RequestParam("file") MultipartFile file) {
+//		return ResponseEntity.ok(pptService.parsePpt(file));
+//	}
+	
+	 @PostMapping("/upload")
+	    public ResponseEntity<?> uploadPpt(@RequestParam("file") MultipartFile file) {
+	        try {
+	            List<Map<String, List<String>>> extractedPaths = pptService.processPpt(file);
+	            if (extractedPaths.isEmpty()) {
+	                return ResponseEntity.status(404).body("No shapes found in the PPT file.");
+	            }
+	            return ResponseEntity.ok(extractedPaths);
+	        } catch (IOException e) {
+	            return ResponseEntity.status(500).body("Error processing file: " + e.getMessage());
+	        }
+	    }
 }

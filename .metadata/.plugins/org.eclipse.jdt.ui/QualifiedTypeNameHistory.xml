@@ -1,2 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.RestController"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.RequestMapping"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.PostMapping"/>
+    <fullyQualifiedTypeName name="org.springframework.http.ResponseEntity"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.RequestParam"/>
+    <fullyQualifiedTypeName name="com.tasks.pptReaderProject.service.pptUploadService"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XMLSlideShow"/>
+    <fullyQualifiedTypeName name="java.io.InputStream"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XSLFSlide"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XSLFShape"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XSLFTextBox"/>
+    <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
+    <fullyQualifiedTypeName name="com.tasks.pptReaderProject.util.svgPathExtractor"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XSLFSimpleShape"/>
+    <fullyQualifiedTypeName name="org.springframework.web.server.ResponseStatusException"/>
+    <fullyQualifiedTypeName name="org.springframework.http.HttpStatus"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XSLFFreeformShape"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XSLFConnectorShape"/>
+    <fullyQualifiedTypeName name="java.awt.geom.Rectangle2D"/>
+    <fullyQualifiedTypeName name="java.util.Map"/>
+    <fullyQualifiedTypeName name="java.util.HashMap"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XSLFGroupShape"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="java.util.regex.Pattern"/>
+    <fullyQualifiedTypeName name="java.util.regex.Matcher"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XSLFAutoShape"/>
+    <fullyQualifiedTypeName name="java.io.IOException"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xslf.usermodel.XSLFShapeContainer"/>
+    <fullyQualifiedTypeName name="org.openxmlformats.schemas.drawingml.x2006.main.CTPath2D"/>
+    <fullyQualifiedTypeName name="org.openxmlformats.schemas.drawingml.x2006.spreadsheetDrawing.CTConnector"/>
+    <fullyQualifiedTypeName name="com.microsoft.schemas.office.drawing.x2008.diagram.CTShape"/>
+    <fullyQualifiedTypeName name="com.microsoft.schemas.office.drawing.x2008.diagram.CTGroupShape"/>
+    <fullyQualifiedTypeName name="java.util.Collections"/>
+    <fullyQualifiedTypeName name="org.springframework.stereotype.Service"/>
+    <fullyQualifiedTypeName name="org.springframework.web.multipart.MultipartFile"/>
+    <fullyQualifiedTypeName name="org.apache.poi.sl.draw.geom.Guide"/>
+    <fullyQualifiedTypeName name="org.apache.poi.sl.draw.geom.Path"/>
+    <fullyQualifiedTypeName name="org.apache.poi.sl.draw.geom.CustomGeometry"/>
+    <fullyQualifiedTypeName name="org.w3c.dom.NodeList"/>
+    <fullyQualifiedTypeName name="org.w3c.dom.Element"/>
+    <fullyQualifiedTypeName name="org.apache.poi.sl.draw.geom.AdjustValue"/>
+    <fullyQualifiedTypeName name="org.apache.poi.xddf.usermodel.PresetGeometry"/>
+</qualifiedTypeNameHistroy>

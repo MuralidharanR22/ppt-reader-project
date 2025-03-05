@@ -1,0 +1,251 @@
+package com.tasks.pptReaderProject.service.impl;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.poi.sl.draw.geom.CustomGeometry;
+import org.apache.poi.sl.draw.geom.Guide;
+import org.apache.poi.sl.draw.geom.Path;
+import org.apache.poi.xslf.usermodel.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTShapeProperties;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPath2D;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPath2DList;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlCursor;
+
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.tasks.pptReaderProject.service.pptUploadService;
+
+@Service
+public class pptUploadServiceImpl implements pptUploadService {
+
+//	public Map<String, Object> parsePpt(MultipartFile file) {
+//		Map<String, Object> response = new HashMap<>();
+//		List<Map<String, Object>> slidesData = new ArrayList<>();
+//
+//		try (InputStream is = file.getInputStream(); XMLSlideShow ppt = new XMLSlideShow(is)) {
+//			for (XSLFSlide slide : ppt.getSlides()) {
+//				List<Map<String, Object>> shapesList = new ArrayList<>();
+//
+//				for (XSLFShape shape : slide.getShapes()) {
+//					Map<String, Object> shapeData = extractShapeData(shape);
+//					if (!shapeData.isEmpty()) {
+//						shapesList.add(shapeData);
+//					}
+//				}
+//
+//				if (!shapesList.isEmpty()) {
+//					slidesData.add(Map.of("slide_number", slide.getSlideNumber(), "shapes", shapesList));
+//				}
+//			}
+//		} catch (Exception e) {
+//			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing PPT file");
+//		}
+//
+//		if (slidesData.isEmpty()) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Shapes not found");
+//		}
+//
+//		response.put("slides", slidesData);
+//		return response;
+//	}
+
+//	@Override
+//	public List<Map<String, List<String>>> processPpt(MultipartFile file) throws IOException {
+//		List<Map<String, List<String>>> slidesPaths = new ArrayList<>();
+//		XMLSlideShow ppt = new XMLSlideShow(file.getInputStream());
+//
+//		for (XSLFSlide slide : ppt.getSlides()) {
+//			Map<String, List<String>> slidePaths = new HashMap<>();
+//			List<String> outerPaths = new ArrayList<>();
+//			List<String> innerPaths = new ArrayList<>();
+//			for (XSLFShape shape : slide.getShapes()) {
+//				Map<String, List<String>> extractedPaths = extractSvgPaths(shape);
+//				if (extractedPaths.containsKey("outer_paths")) {
+//					outerPaths.addAll(extractedPaths.get("outer_paths"));
+//				}
+//				if (extractedPaths.containsKey("inner_paths")) {
+//					innerPaths.addAll(extractedPaths.get("inner_paths"));
+//				}
+//			}
+//			if (!outerPaths.isEmpty()) {
+//				slidePaths.put("outer_paths", outerPaths);
+//			}
+//			if (!innerPaths.isEmpty()) {
+//				slidePaths.put("inner_paths", innerPaths);
+//			}
+//			if (!slidePaths.isEmpty()) {
+//				slidesPaths.add(slidePaths);
+//			}
+//		}
+//		return slidesPaths;
+//	}
+//
+//	private Map<String, List<String>> extractSvgPaths(XSLFShape shape) {
+//        Map<String, List<String>> shapePaths = new HashMap<>();
+//        List<String> outerPaths = new ArrayList<>();
+//        List<String> innerPaths = new ArrayList<>();
+//
+//        if (shape instanceof XSLFAutoShape autoShape) {
+//            Rectangle2D bounds = autoShape.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//        } 
+//        else if (shape instanceof XSLFFreeformShape freeformShape) {
+//            Rectangle2D bounds = freeformShape.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//        } 
+//        else if (shape instanceof XSLFTextBox textBox) {
+//            Rectangle2D bounds = textBox.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//        } 
+//        else if (shape instanceof XSLFConnectorShape connector) {
+//            Rectangle2D bounds = connector.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//        } 
+//        else if (shape instanceof XSLFGroupShape groupShape) {
+//            Rectangle2D bounds = groupShape.getAnchor();
+//            outerPaths.add(generateSvgPath(bounds));
+//            innerPaths.add(generateInnerPath(bounds));
+//
+//            for (XSLFShape innerShape : groupShape.getShapes()) {
+//                Map<String, List<String>> extractedPaths = extractSvgPaths(innerShape);
+//                outerPaths.addAll(extractedPaths.getOrDefault("outer_paths", new ArrayList<>()));
+//                innerPaths.addAll(extractedPaths.getOrDefault("inner_paths", new ArrayList<>()));
+//            }
+//        }
+//
+//        if (!outerPaths.isEmpty()) {
+//            shapePaths.put("outer_paths", outerPaths);
+//        }
+//        if (!innerPaths.isEmpty()) {
+//            shapePaths.put("inner_paths", innerPaths);
+//        }
+//        return shapePaths;
+//    }
+//
+//    private String generateSvgPath(Rectangle2D bounds) {
+//        return String.format("M %.2f %.2f L %.2f %.2f L %.2f %.2f L %.2f %.2f Z",
+//                bounds.getX(), bounds.getY(),
+//                bounds.getX() + bounds.getWidth(), bounds.getY(),
+//                bounds.getX() + bounds.getWidth(), bounds.getY() + bounds.getHeight(),
+//                bounds.getX(), bounds.getY() + bounds.getHeight());
+//    }
+//
+//    private String generateInnerPath(Rectangle2D bounds) {
+//        double innerOffsetX = bounds.getWidth() * 0.05;
+//        double innerOffsetY = bounds.getHeight() * 0.05;
+//
+//        innerOffsetX = Math.min(innerOffsetX, bounds.getWidth() / 2);
+//        innerOffsetY = Math.min(innerOffsetY, bounds.getHeight() / 2);
+//
+//        return String.format("M %.2f %.2f L %.2f %.2f L %.2f %.2f L %.2f %.2f Z",
+//                bounds.getX() + innerOffsetX, bounds.getY() + innerOffsetY,
+//                bounds.getX() + bounds.getWidth() - innerOffsetX, bounds.getY() + innerOffsetY,
+//                bounds.getX() + bounds.getWidth() - innerOffsetX, bounds.getY() + bounds.getHeight() - innerOffsetY,
+//                bounds.getX() + innerOffsetX, bounds.getY() + bounds.getHeight() - innerOffsetY);
+//    }
+	
+	@Override
+	public List<Map<String, List<String>>> processPpt(MultipartFile file) throws IOException {
+		List<Map<String, List<String>>> slidesPaths = new ArrayList<>();
+        XMLSlideShow ppt = new XMLSlideShow(file.getInputStream());
+
+        for (XSLFSlide slide : ppt.getSlides()) {
+            Map<String, List<String>> slidePaths = new HashMap<>();
+            List<String> outerPaths = new ArrayList<>();
+            List<String> innerPaths = new ArrayList<>();
+
+            for (XSLFShape shape : slide.getShapes()) {
+                Map<String, List<String>> extractedPaths = extractSvgPaths(shape);
+
+                outerPaths.addAll(extractedPaths.getOrDefault("outer_paths", new ArrayList<>()));
+                innerPaths.addAll(extractedPaths.getOrDefault("inner_paths", new ArrayList<>()));
+            }
+
+            if (!outerPaths.isEmpty()) {
+                slidePaths.put("outer_paths", outerPaths);
+            }
+            if (!innerPaths.isEmpty()) {
+                slidePaths.put("inner_paths", innerPaths);
+            }
+
+            if (!slidePaths.isEmpty()) {
+                slidesPaths.add(slidePaths);
+            }
+        }
+        return slidesPaths;
+    }
+
+	private Map<String, List<String>> extractSvgPaths(XSLFShape shape) {
+        Map<String, List<String>> shapePaths = new HashMap<>();
+        List<String> outerPaths = new ArrayList<>();
+        List<String> innerPaths = new ArrayList<>();
+
+        if (shape instanceof XSLFAutoShape autoShape) {
+            String svgContent = extractSvgContent(autoShape);
+            if (svgContent != null) {
+                parseSvgPaths(svgContent, outerPaths, innerPaths);
+            }
+        } else if (shape instanceof XSLFFreeformShape freeformShape) {
+            String svgContent = extractSvgContent(freeformShape);
+            if (svgContent != null) {
+                parseSvgPaths(svgContent, outerPaths, innerPaths);
+            }
+        }
+
+        if (!outerPaths.isEmpty()) {
+            shapePaths.put("outer_paths", outerPaths);
+        }
+        if (!innerPaths.isEmpty()) {
+            shapePaths.put("inner_paths", innerPaths);
+        }
+
+        return shapePaths;
+    }
+
+    private String extractSvgContent(XSLFShape shape) {
+        // This method should extract the SVG content from the shape.
+        // For example, if the shape has embedded SVG data, you can retrieve it here.
+        // This is a placeholder implementation.
+        return null;
+    }
+
+    private void parseSvgPaths(String svgContent, List<String> outerPaths, List<String> innerPaths) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            org.w3c.dom.Document document = builder.parse(new org.xml.sax.InputSource(new java.io.StringReader(svgContent)));
+
+            NodeList pathElements = document.getElementsByTagName("path");
+            for (int i = 0; i < pathElements.getLength(); i++) {
+                Element pathElement = (Element) pathElements.item(i);
+                String pathData = pathElement.getAttribute("d");
+                if (pathData != null && !pathData.isEmpty()) {
+                    // Determine if the path is outer or inner based on your logic
+                    outerPaths.add(pathData);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
