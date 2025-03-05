@@ -22,7 +22,7 @@ public class pptUploadController {
 
 	}
 
-	@PostMapping("api/ppt/upload")
+	@PostMapping("/upload")
 	public ResponseEntity<?> uploadPpt(@RequestParam("file") MultipartFile file) {
 		try {
 			List<Map<String, List<String>>> extractedPaths = pptService.processPpt(file);

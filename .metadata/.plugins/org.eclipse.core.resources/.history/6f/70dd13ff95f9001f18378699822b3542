@@ -8,5 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface pptUploadService {
 
+//	public Map<String, Object> parsePpt(MultipartFile file);
+	
 	public List<Map<String, List<String>>> processPpt(MultipartFile file) throws IOException;
 }
